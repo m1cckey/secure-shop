@@ -1,0 +1,5 @@
+access.log
+auth.log
+db.sqlite3
+.venv
+secrets
