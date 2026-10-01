@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Главное меню</title>
+    </head>
+    <body>
+        <header>
+            <ul style="text-align: center;">
+                <li style="display: inline; padding-left: 20px;"><a href="{{ url('index') }}" style="color: rgb(60, 180, 203)">Главная</a></li>
+                <li style="display: inline; padding-left: 20px;"><a href="{{ url('login') }}" style="color: rgb(60, 180, 203)">Вход</a></li>
+                <li style="display: inline; padding-left: 20px;"><a href="/{{ 'register'  }}" style="color: rgb(60, 180, 203);">Регистрация</a></li>
+                <li style="display: inline; padding-left: 20px;"><a href="/{{ 'search' }}" style="color: rgb(60, 180, 203);">Поиск</a></li>
+            </ul>
+        </header>
+
+        <main>
+            {% block content %}
+
+            {% endblock %}
+        </main>
+    </body>
+
+</html>
