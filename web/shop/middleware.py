@@ -23,8 +23,7 @@ class SimpleMiddleware:
         status_code  = response.status_code
         size = len(response.text)
         apache_combained = f'{ip} - - [{date}] "{method} {full_path}" {status_code} {size} "{refer}" "{User_Agent}"'
-        print('MW: пишу в файл:', apache_combained)
         self.log_file.write(apache_combained + '\n')
-        print('MW: файл =', self.log_file.name, 'позиция =', self.log_file.tell())
+
         return response
         
