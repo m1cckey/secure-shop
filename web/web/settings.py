@@ -11,9 +11,16 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
 from pathlib import Path
+import json
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+
+js_path = Path('/Users/lenar/Desktop/secure-shop/secrets/config.json')
+with open(js_path, 'r', encoding='utf-8') as js_file:
+    secret = json.load(js_file)
+db_password = secret.get('DB_password')
 
 
 # Quick-start development settings - unsuitable for production
@@ -88,8 +95,12 @@ WSGI_APPLICATION = 'web.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'secure_shop',
+        'USER': 'postgres',
+        'PASSWORD': db_password,
+        'HOST': 'localhost',
+        'PORT': '5432'
     }
 }
 

@@ -2,4 +2,25 @@
 
 {% block content %}
 <h1>Это страница поиска</h1>
+
+
+<form action="/search" method="GET">
+  <input type="search" name="q" placeholder="искать товар" required>
+  <button type="submit">Найти</button>
+</form>
+
+{% if q %}
+    {% if result == [] %}
+        <p>Ничего не нашлось</p>
+    {% else %}
+        {% for item in result %}
+            <ul>
+            <li>название: {{ item.name }}<br> описание: {{item.descriptions}}<br> цена: {{item.price}}</li>
+            </ul>
+        {% endfor %}
+    {% endif %}
+{% else %}
+    <p>здесь будет результат поиска</p>
+{% endif %}
+
 {% endblock %}
