@@ -2,4 +2,19 @@
 
 {% block content %}
 <h1>Это страница регистрации</h1>
+<form action="/register/" method="POST">
+    
+    {% if error %}
+        <p style="color: red;">Юзернейм занят</p>
+    {% endif %}
+    <label for ='username'>Имя</label>
+    <input type="text" name="username" value="" placeholder="username" required><br>
+
+    <label for ='password'>Пароль</label>
+    <input type="password" name="password" value="" placeholder="password" required><br>
+
+    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+
+    <button type="submit">Зарегестрироваться</button>
+</form>
 {% endblock %}

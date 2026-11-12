@@ -12,7 +12,7 @@ class AuthLogger:
             'ip': ip,
             'username': username,
             'result': result,
-            'latency': latency_ms
+            'latency_ms': latency_ms
         }
         self.log_file.write(json.dumps(event, ensure_ascii=False) + '\n', )
 

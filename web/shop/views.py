@@ -1,7 +1,10 @@
 from django.shortcuts import render
 from django.db import connection
-
-
+from .security import hash_pas, check_password
+from .models import User
+from django.shortcuts import redirect
+from .authlog import auth_logger
+import time
 
 def render_page(request, template, context=None):
     return render(request, template, context or {})
@@ -10,10 +13,58 @@ def index(request):
     return render_page(request, 'index.html')
 
 def login(request):
-    return render_page(request, 'login.html')
+    if request.method == 'GET':
+        return render_page(request, 'login.html')
+    elif request.method =='POST':
+        start_time = time.perf_counter()
+        username = request.POST.get("username")
+        password = request.POST.get("password")  
+        with connection.cursor() as cursor:
+            cursor.execute(f"SELECT password_hash FROM shop_user WHERE username = '{username}'")   
+            credentials = cursor.fetchone() 
+        if credentials is not None:
+            if check_password(credentials[0], password):
+                end_time = time.perf_counter()
+                latency_ms = (end_time - start_time) * 1000
+                auth_logger.log_auth(request.META.get('REMOTE_ADDR'), username, 'success', latency_ms)
+                return redirect('/profile/')
+            else:
+                end_time = time.perf_counter()
+                latency_ms = (end_time - start_time) * 1000
+                context = {'error': 'wrong password'}
+                auth_logger.log_auth(request.META.get('REMOTE_ADDR'), username, 'wrong_password', latency_ms)
+                return render_page(request, 'login.html', context)
+        else:
+            end_time = time.perf_counter()
+            latency_ms = (end_time - start_time) * 1000
+            context = {'error': 'invalid username'}
+            auth_logger.log_auth(request.META.get('REMOTE_ADDR'), username, 'invalid_user', latency_ms)
+            return render_page(request, 'login.html', context)
+
+
+
+def profile(request):
+    return render_page(request, 'profile.html')
 
 def register(request):
-    return render_page(request, 'register.html')
+    if request.method == 'GET':
+        return render_page(request, 'register.html')
+    elif request.method == 'POST':
+        start_time = time.perf_counter()
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+        hashed_pas = hash_pas(password)
+        try:
+            User.create_user(username, hashed_pas)
+        except ValueError:
+            context = {'error': 'имя пользлвателя занято'}
+            return render_page(request, 'register.html', context)
+        end_time = time.perf_counter()
+        latency_ms = (end_time - start_time) * 1000
+        auth_logger.log_auth(request.META.get('REMOTE_ADDR'), username, 'registered', latency_ms)
+        return redirect('/login/')
+        
+
 
 def search(request):
     payload = request.GET.get('q')
@@ -28,6 +79,3 @@ def search(request):
             context.update({'result': rows})
 
     return render_page(request, 'search.html', context)
-
-def profile(request):
-    return render_page(request, 'profile.html')

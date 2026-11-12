@@ -1,5 +1,22 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>Это страница входа</h1>
+<h1>Вход</h1>
+<form action="/login/" method="POST">
+    
+    {% if error == 'wrong password' %}
+        <p style="color: red;">неверный пароль</p>
+    {% elif error == 'invalid username' %}
+        <p style="color: red;">неверный юзернейм</p>
+    {% endif %}
+    <label for ='username'>Имя</label>
+    <input type="text" name="username" value="" placeholder="username" required><br>
+
+    <label for ='password'>Пароль</label>
+    <input type="password" name="password" value="" placeholder="password" required><br>
+
+    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+
+    <button type="submit">Войти</button>
+</form>
 {% endblock %}
