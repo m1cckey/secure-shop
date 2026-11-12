@@ -27,7 +27,7 @@ def signature(username, secret_key):
     return f'{username}:{sign}'
 
 
-def  verify_signature(secret_key, signature):
+def verify_signature(secret_key, signature):
     try:
         username = signature.split(':')[0]
         sign = signature.split(':')[1]

@@ -108,7 +108,7 @@ def search(request):
                }
     if payload:
         with connection.cursor() as cursor:
-            cursor.execute(f"SELECT * FROM shop_Product WHERE name LIKE '%{payload}%';")
+            cursor.execute(f"SELECT * FROM shop_Product WHERE name ILIKE '%{payload}%';")
             columns = [col[0] for col in cursor.description]
             rows = [dict(zip(columns, row)) for row in cursor.fetchall()]
             context.update({'result': rows})
