@@ -2,6 +2,7 @@ import hashlib
 import os
 import hmac
 
+
 def hash_pas(password: str) -> str:
     password_enc = password.encode()
     salt_enc = os.urandom(16)
@@ -19,5 +20,20 @@ def check_password(password_and_salt: str, password: str) -> list:
     check_pas_hex = check_pas.hex()
     return hmac.compare_digest(hex_password, check_pas_hex)
 
+
+def signature(username, secret_key):
+    h = hmac.new(secret_key.encode(), username.encode(), hashlib.sha256)
+    sign = h.hexdigest()
+    return f'{username}:{sign}'
+
+
+def  verify_signature(secret_key, signature):
+    try:
+        username = signature.split(':')[0]
+        sign = signature.split(':')[1]
+        verify_sign = hmac.new(secret_key.encode(), username.encode(), hashlib.sha256).hexdigest()
+        return hmac.compare_digest(verify_sign, sign)
+    except (ValueError, IndexError):
+        return False
 
 
