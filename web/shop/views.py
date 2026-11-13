@@ -1,12 +1,13 @@
 from django.shortcuts import render
 from django.db import connection
 from .security import hash_pas, check_password, signature, verify_signature
-from .models import User
+from .models import User, Review
 from django.shortcuts import redirect
 from .authlog import auth_logger
 import time
 from django.http import HttpResponse
 import json
+import jinja2
 
 js_path = '/Users/lenar/Desktop/secure-shop/secrets/config.json'
 with open(js_path, 'r', encoding='utf-8') as f:
@@ -64,7 +65,15 @@ def profile(request):
     if cookies is not None:
         username = cookies.split(':')[0]
         if verify_signature(Cookie_key, cookies):
+            with connection.cursor() as cursor:
+                cursor.execute(f"SELECT display_name FROM shop_user WHERE username = '{username}';")   
+                display_name = cursor.fetchone()[0] 
             context = {'name': username}
+            if request.method == 'POST':
+                display_name = request.POST.get('display_name')
+                User.change_name(username, display_name)
+            greeting = jinja2.Template(f"Привет, {display_name}").render()
+            context = {'greeting': greeting}
             return render_page(request, 'profile.html', context)
         return redirect('/login/')
     return redirect('/login/')
@@ -114,3 +123,18 @@ def search(request):
             context.update({'result': rows})
 
     return render_page(request, 'search.html', context)
+
+
+def comments(request):
+    context = {'result': []}
+    with connection.cursor() as cursor:
+        cursor.execute('SELECT * FROM shop_Review;')
+        columns = [col[0] for col in cursor.description]
+        rows = [dict(zip(columns, row)) for row in cursor.fetchall()]
+        context.update({'result': rows})
+    if request.method == 'POST':
+            author = request.POST.get('a')
+            comment = request.POST.get('c')
+            Review.create_comment(author, comment)
+            return redirect('/comments/')
+    return render_page(request, 'comments.html', context)

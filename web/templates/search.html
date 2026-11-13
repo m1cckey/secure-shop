@@ -11,8 +11,14 @@
 
 {% if q %}
     {% if result == [] %}
+    {% autoescape false %}
         <p>Ничего не нашлось</p>
+        <p>Вы искали '{{ q }}'</p>
+    {% endautoescape %}
     {% else %}
+        {% autoescape false %}
+        <p>Вы искали '{{ q }}'</p>
+        {% endautoescape %}
         {% for item in result %}
             <ul>
             <li>название: {{ item.name }}<br> описание: {{item.descriptions}}<br> цена: {{item.price}}</li>

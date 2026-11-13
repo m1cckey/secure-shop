@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+<p1>добавить комментарий</p1>
+<form action="/comments/" method="POST">
+
+<label for="author">автор</label>
+<input type="search" placeholder="Arthas Minetil" required name="a"><br>
+<label for="comment">комментарий</label>
+<input type="search" placeholder="comment" required name="c"><br>
+<button type="submit">оставить комментарий</button>
+ <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+</form>
+{% if result == [] %}
+    <p>комментариев пока нет</p>
+{% else %}
+    {% for item in result %}
+        <ul>
+            {% autoescape false %}
+            <li>автор: {{ item.author }}<br> комментарий: {{ item.text }}</li>
+            {% endautoescape %}
+        </ul>
+    {% endfor %}
+{% endif %}
+{% endblock %}
